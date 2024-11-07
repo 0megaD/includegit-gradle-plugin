@@ -32,5 +32,5 @@ tasks {
 }
 
 gitPublish {
-    repoUri.set("git@github.com:melix/includegit-gradle-plugin.git")
+    repoUri.set("git@github.com:0megaD/includegit-gradle-plugin.git")
 }

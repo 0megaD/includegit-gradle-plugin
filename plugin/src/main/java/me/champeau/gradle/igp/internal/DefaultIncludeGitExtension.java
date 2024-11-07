@@ -15,9 +15,6 @@
  */
 package me.champeau.gradle.igp.internal;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import me.champeau.gradle.igp.Authentication;
 import me.champeau.gradle.igp.GitIncludeExtension;
 import me.champeau.gradle.igp.IncludedGitRepo;
@@ -26,11 +23,8 @@ import org.eclipse.jgit.api.GitCommand;
 import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.transport.JschConfigSessionFactory;
-import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.SshSessionFactory;
-import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.*;
+import org.eclipse.jgit.transport.sshd.SshdSessionFactoryBuilder;
 import org.eclipse.jgit.util.FS;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -209,28 +203,22 @@ public abstract class DefaultIncludeGitExtension implements GitIncludeExtension 
                 auth.getPassword().get()
         )));
         authentication.getSshWithPassword().ifPresent(auth -> {
-            SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
-                @Override
-                protected void configure(OpenSshConfig.Host host, Session session) {
-                    session.setPassword(auth.getPassword().get());
-                }
-            };
+            SshSessionFactory sshSessionFactory = new SshdSessionFactoryBuilder()
+                    .setPreferredAuthentications("publickey,password")
+                    .setHomeDirectory(FS.DETECTED.userHome())
+                    .setSshDirectory(FS.DETECTED.userHome())
+                    .build(null);
             command.setTransportConfigCallback(transport -> {
                 SshTransport sshTransport = (SshTransport) transport;
                 sshTransport.setSshSessionFactory(sshSessionFactory);
             });
         });
         authentication.getSshWithPublicKey().ifPresent(keyConfig -> {
-            SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
-                @Override
-                protected JSch createDefaultJSch(FS fs) throws JSchException {
-                    JSch defaultJSch = super.createDefaultJSch( fs );
-                    if (keyConfig.getPrivateKey().isPresent()) {
-                        defaultJSch.addIdentity(keyConfig.getPrivateKey().get().getAsFile().getAbsolutePath());
-                    }
-                    return defaultJSch;
-                }
-            };
+            SshSessionFactory sshSessionFactory = new SshdSessionFactoryBuilder()
+                    .setPreferredAuthentications("publickey")
+                    .setHomeDirectory(FS.DETECTED.userHome())
+                    .setSshDirectory(FS.DETECTED.userHome())
+                    .build(null);
             command.setTransportConfigCallback(transport -> {
                 SshTransport sshTransport = (SshTransport) transport;
                 sshTransport.setSshSessionFactory(sshSessionFactory);
