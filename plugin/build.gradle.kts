@@ -9,7 +9,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "me.champeau.gradle.includegit"
+group = "com.vectorandvertex.gradle.includegit"
 
 kotlin {
     jvmToolchain(19)
@@ -46,7 +46,7 @@ tasks.withType<Test> {
 
 gradlePlugin {
     val includeBuildPlugin by plugins.creating {
-        id = "me.champeau.includegit"
+        id = "com.vectorandvertex.includegit"
         implementationClass = "me.champeau.gradle.igp.IncludeGitPlugin"
     }
 }
@@ -54,7 +54,7 @@ gradlePlugin {
 afterEvaluate {
     pluginBundle {
         website = "https://melix.github.io/includegit-gradle-plugin/"
-        vcsUrl = "https://github.com/melix/includegit-gradle-plugin"
+        vcsUrl = "https://github.com/0megaD/includegit-gradle-plugin"
         description = "Adds support for including Git repositories"
         tags = listOf("git", "included builds")
 
