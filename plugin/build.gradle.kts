@@ -48,22 +48,15 @@ gradlePlugin {
     val includeBuildPlugin by plugins.creating {
         id = "com.vectorandvertex.includegit"
         implementationClass = "me.champeau.gradle.igp.IncludeGitPlugin"
+        tags = listOf("git", "included builds")
+        description = "Adds support for including Git repositories"
+        website = "https://melix.github.io/includegit-gradle-plugin/"
+        vcsUrl = "https://github.com/0megaD/includegit-gradle-plugin"
     }
-
-    website = "https://melix.github.io/includegit-gradle-plugin/"
-    vcsUrl = "https://github.com/0megaD/includegit-gradle-plugin"
-    description = "Adds support for including Git repositories"
-//    tags = listOf("git", "included builds")
 
     plugins {
         named("includeBuildPlugin") {
             displayName = "Gradle Include Git repositories plugin"
         }
     }
-
-//    mavenCoordinates {
-//        groupId = project.group as String
-//        artifactId = project.name
-//        version = project.version as String
-//    }
 }
